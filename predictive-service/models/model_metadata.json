@@ -1,0 +1,37 @@
+{
+  "model_type": "XGBClassifier",
+  "target": "Type_Panne",
+  "classes": [
+    "Humain",
+    "Logiciel",
+    "Mécanique",
+    "Météo",
+    "Électrique"
+  ],
+  "n_features": 55,
+  "accuracy": 0.923312,
+  "precision_par_classe": {
+    "Humain": 0.945,
+    "Logiciel": 0.914,
+    "Mécanique": 0.9594,
+    "Météo": 0.8174,
+    "Électrique": 0.9033
+  },
+  "hyperparameters": {
+    "n_estimators": 700,
+    "max_depth": 10,
+    "learning_rate": 0.03,
+    "subsample": 0.85,
+    "colsample_bytree": 0.8
+  },
+  "dataset": {
+    "file": "casablanca_data_95plus.csv",
+    "n_rows": 80000,
+    "noise_level": 0.15
+  },
+  "files": {
+    "model": "models/xgboost_type_panne.joblib",
+    "encoder": "models/label_encoder.joblib",
+    "features": "models/feature_columns.joblib"
+  }
+}
