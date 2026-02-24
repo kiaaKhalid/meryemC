@@ -1,0 +1,116 @@
+/Users/kiaakhalidgmail/Project/meryem/predictive-service/venv/lib/python3.13/site-packages/sklearn/base.py:463: InconsistentVersionWarning: Trying to unpickle estimator _SigmoidCalibration from version 1.6.1 when using version 1.8.0. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+/Users/kiaakhalidgmail/Project/meryem/predictive-service/venv/lib/python3.13/site-packages/sklearn/base.py:463: InconsistentVersionWarning: Trying to unpickle estimator CalibratedClassifierCV from version 1.6.1 when using version 1.8.0. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+/Users/kiaakhalidgmail/Project/meryem/predictive-service/venv/lib/python3.13/site-packages/sklearn/base.py:463: InconsistentVersionWarning: Trying to unpickle estimator LabelEncoder from version 1.6.1 when using version 1.8.0. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:     Started server process [36091]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+✅ Industrial Model loaded: /Users/kiaakhalidgmail/Project/meryem/predictive-service/models/modele_maintenance_final.joblib
+✅ Expert Keras Model loaded: /Users/kiaakhalidgmail/Project/meryem/predictive-service/models/expert_casablanca_final.keras
+✅ XGBoost Type_Panne Model loaded (92% accuracy)
+INFO:     127.0.0.1:60952 - "POST /predict-type-panne HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62793 - "OPTIONS /predict-type-panne HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62793 - "POST /predict-type-panne HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63038 - "POST /predict-type-panne HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63095 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63095 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63244 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63366 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63519 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63641 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63775 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63901 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64028 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64159 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64282 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64525 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64593 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64695 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64818 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65310 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49207 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49464 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49721 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49978 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50268 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50530 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50792 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51055 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51307 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51615 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51870 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52123 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52361 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52613 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52883 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53146 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53392 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53648 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53893 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54172 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54426 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54686 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54947 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55225 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55469 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55719 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55990 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56292 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56555 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56823 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57157 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57436 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57696 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57940 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58228 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58479 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58745 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59000 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59275 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59526 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59778 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60031 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60286 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60534 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60786 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61034 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61291 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61569 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61840 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62134 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62389 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62660 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62920 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63173 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63428 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63690 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63993 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64258 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64515 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64804 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65126 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65396 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49259 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49519 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49802 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50062 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50310 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50566 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50816 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51105 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51355 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51609 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51690 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51701 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51716 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51755 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51777 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51810 - "POST /predict-expert HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51837 - "POST /predict-expert HTTP/1.1" 200 OK
