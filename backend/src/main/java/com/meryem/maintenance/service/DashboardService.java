@@ -58,8 +58,6 @@ public class DashboardService {
     }
 
     private Double calculateEVaR(List<Equipment> equipments, List<MaintenanceAlert> alerts) {
-        // Real Sum(FinancialValue)
-                         for equipments under high risk (> 80%)
         return alerts.stream()
                 .filter(a -> a.getRiskScore() != null && a.getRiskScore() > 80)
                 .mapToDouble(a -> {
@@ -80,7 +78,6 @@ public class DashboardService {
     }
 
     private Integer calculatePopulationShield(List<Equipment> equipments, List<MaintenanceAlert> alerts) {
-        // Real Sum(ClientsAffected) for equipments in "Zone Rouge"
 
                 .filter(a -> a.getRiskScore() != null && a.getRiskScore() > 80)
                 .mapToInt(a -> {
