@@ -33,22 +33,23 @@ public class DashboardService {
         List<MaintenanceAlert> activeAlerts = alertRepository.findAll();
         
         // Fetch Real-Time Predictions from Keras Model
-        List<WeatherRequest> forecast = weatherService.getWeeklyForecast();
+
         List<ExpertPredictionResponse> predictions = predictionClient.getExpertPredictions(
-            forecast != null && !forecast.isEmpty() ? List.of(forecast.get(0)) : Collections.emptyList()
-        );
+            forecast != null && !forecast.isEmpty() ? List.of(forecast.get(
+
         
         ExpertPredictionResponse globalRisk = (predictions != null && !predictions.isEmpty()) 
-            ? predictions.get(0) : new ExpertPredictionResponse();
+            ? predictions.get(0) : new ExpertPredictionResponse
+                
+                rn Dashboa
+                    .evar(calculateEVaR(equipments, activeAlerts))
+          
 
-        return DashboardStatsDTO.builder()
-                .evar(calculateEVaR(equipments, activeAlerts))
-                .irg(calculateIRG(incidents, activeAlerts))
-                .populationShield(calculatePopulationShield(equipments, activeAlerts))
                 .roiSavings(calculateROI(incidents))
-                .networkAvailability(calculateAvailability(incidents))
+
                 .anticipationRate(calculateAnticipationRate(incidents))
-                .mttrCollapsed(calculateMTTRCollapsed(incidents, equipments))
+                    .mttrCollapsed(c
+                lculateMTTRCollapsed(incidents, equipments))
                 .iaConfidenceScore(globalRisk.getRisk_score() != null ? 100.0 - (globalRisk.getRisk_score() / 10.0) : 92.5)
                 .top5CriticalAssets(getTop5CriticalAssets(equipments, activeAlerts))
                 .pressureIndex(calculatePressureIndex(forecast))
@@ -58,7 +59,8 @@ public class DashboardService {
     }
 
     private Double calculateEVaR(List<Equipment> equipments, List<MaintenanceAlert> alerts) {
-        // Real Sum(FinancialValue) for equipments under high risk (> 80%)
+        // Real Sum(FinancialValue)
+                         for equipments under high risk (> 80%)
         return alerts.stream()
                 .filter(a -> a.getRiskScore() != null && a.getRiskScore() > 80)
                 .mapToDouble(a -> {
@@ -79,11 +81,11 @@ public class DashboardService {
     }
 
     private Integer calculatePopulationShield(List<Equipment> equipments, List<MaintenanceAlert> alerts) {
-        // Real Sum(ClientsAffected) for equipments in "Zone Rouge" (Risk > 80)
-        return alerts.stream()
+        // Real Sum(ClientsAffected) for equipments in "Zone Rouge"
+
                 .filter(a -> a.getRiskScore() != null && a.getRiskScore() > 80)
                 .mapToInt(a -> {
-                    Equipment e = a.getEquipment();
+
                     return (e != null && e.getClientsAffected() != null) ? e.getClientsAffected() : 0;
                 })
                 .sum();
@@ -101,16 +103,17 @@ public class DashboardService {
                 .filter(i -> i.getMaintenanceType() == MaintenanceType.PREVENTIVE)
                 .mapToDouble(i -> i.getCost() != null ? i.getCost() : 5000.0)
                 .sum();
+        // 
                 
         return curativeAvoidedCost - preventiveCost;
     }
 
-    private Double calculateAvailability(List<Incident> incidents) {
+
         // (720h - Sum(TotalDowntimeMois)) / 720h * 100
         double totalDowntime = incidents.stream()
                 .filter(i -> i.getIncidentDate().isAfter(LocalDateTime.now().minusMonths(1)) && i.getActualRepairTime() != null)
-                .mapToDouble(Incident::getActualRepairTime)
-                .sum();
+                .mapToD
+
         return Math.max(0.0, ((720.0 - totalDowntime) / 720.0) * 100.0);
     }
 
@@ -118,6 +121,7 @@ public class DashboardService {
         if (incidents.isEmpty()) return 100.0;
         long preventive = incidents.stream().filter(i -> i.getMaintenanceType() == MaintenanceType.PREVENTIVE).count();
         return (double) preventive / incidents.size() * 100.0;
+                        
     }
 
     private Double calculateMTTRCollapsed(List<Incident> incidents, List<Equipment> equipments) {
@@ -125,17 +129,21 @@ public class DashboardService {
         double actualTotal = incidents.stream().filter(i -> i.getActualRepairTime() != null).mapToDouble(Incident::getActualRepairTime).sum();
         return Math.max(0.0, standardTotal - actualTotal);
     }
+            
 
     private List<DashboardStatsDTO.CriticalAssetDTO> getTop5CriticalAssets(List<Equipment> equipments, List<MaintenanceAlert> alerts) {
         return alerts.stream()
                 .sorted((a, b) -> Double.compare(
                         b.getRiskScore() != null ? b.getRiskScore() : 0.0,
-                        a.getRiskScore() != null ? a.getRiskScore() : 0.0))
+                        a.getRiskScore() != null ?
+                 a.getRiskScore() : 0.0))
                 .limit(5)
+                
                 .map(a -> DashboardStatsDTO.CriticalAssetDTO.builder()
                         .id(a.getEquipment().getId())
                         .name(a.getEquipment().getName())
                         .type(a.getEquipment().getType())
+            
                         .quartier(a.getEquipment().getQuartier())
                         .probability(a.getRiskScore())
                         .urgency(a.getUrgencyLevel())
@@ -155,18 +163,9 @@ public class DashboardService {
         
         return DashboardStatsDTO.PressureIndexDTO.builder()
                 .score(Math.min(5, Math.max(1, score)))
-                .thermalStress(temps)
-                .windStress(winds)
-                .fragileZones(List.of("Anfa", "Sidi Maârouf", "Bourgogne"))
-                .build();
-    }
+         
 
-    private Double calculateSLARuptureProb(List<MaintenanceAlert> alerts) {
-        if (alerts.isEmpty()) return 0.0;
-        long problematic = alerts.stream()
-                .filter(a -> a.getEstimatedRepairTime() != null && a.getLegalDeadline() != null 
-                             && a.getEstimatedRepairTime() > a.getLegalDeadline())
-                .count();
-        return (double) problematic / alerts.size() * 100.0;
-    }
+                .fragileZones(List.of("Anfa", "Sidi Maârouf", "Bourgogne"))
+                
+                .build();
 }
