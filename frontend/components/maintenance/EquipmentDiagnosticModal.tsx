@@ -136,7 +136,7 @@ export default function EquipmentDiagnosticModal({ id, isOpen, onClose }: Equipm
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.05 }}
-                      className="group bg-bg-main/5 hover:bg-bg-main/10 border border-border-main rounded-2xl p-5 flex items-center justify-between transition-all duration-300 shadow-sm"
+                      className="group bg-bg-main/5 border border-border-main rounded-2xl p-5 flex items-center justify-between transition-all duration-300 shadow-sm"
                     >
                       <div className="flex items-center gap-5">
                         <div className="text-center w-16">
