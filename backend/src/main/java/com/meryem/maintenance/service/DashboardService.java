@@ -88,8 +88,6 @@ public class DashboardService {
     }
 
     private Double calculateROI(List<Incident> incidents) {
-        // Real Costs: Savings = Sum(Curative_Avoided) - Sum(Preventive_Cost)
-        // Using industrial standard: Curative failure costs 10x more than preventive maintenance
         double curativeAvoidedCost = incidents.stream()
                 .filter(i -> i.getMaintenanceType() == MaintenanceType.CURATIVE && "CLOSED".equals(i.getStatus()))
                 .mapToDouble(i -> i.getCost() != null ? i.getCost() : 50000.0)
@@ -99,17 +97,15 @@ public class DashboardService {
                 .filter(i -> i.getMaintenanceType() == MaintenanceType.PREVENTIVE)
                 .mapToDouble(i -> i.getCost() != null ? i.getCost() : 5000.0)
                 .sum();
-        // 
                 
         return curativeAvoidedCost - preventiveCost;
     }
 
-
-        // (720h - Sum(TotalDowntimeMois)) / 720h * 100
+    private Double calculateAvailability(List<Incident> incidents) {
         double totalDowntime = incidents.stream()
                 .filter(i -> i.getIncidentDate().isAfter(LocalDateTime.now().minusMonths(1)) && i.getActualRepairTime() != null)
-                .mapToD
-
+                .mapToDouble(Incident::getActualRepairTime)
+                .sum();
         return Math.max(0.0, ((720.0 - totalDowntime) / 720.0) * 100.0);
     }
 
