@@ -113,7 +113,6 @@ public class DashboardService {
         if (incidents.isEmpty()) return 100.0;
         long preventive = incidents.stream().filter(i -> i.getMaintenanceType() == MaintenanceType.PREVENTIVE).count();
         return (double) preventive / incidents.size() * 100.0;
-                        
     }
 
     private Double calculateMTTRCollapsed(List<Incident> incidents, List<Equipment> equipments) {
@@ -121,21 +120,17 @@ public class DashboardService {
         double actualTotal = incidents.stream().filter(i -> i.getActualRepairTime() != null).mapToDouble(Incident::getActualRepairTime).sum();
         return Math.max(0.0, standardTotal - actualTotal);
     }
-            
 
     private List<DashboardStatsDTO.CriticalAssetDTO> getTop5CriticalAssets(List<Equipment> equipments, List<MaintenanceAlert> alerts) {
         return alerts.stream()
                 .sorted((a, b) -> Double.compare(
                         b.getRiskScore() != null ? b.getRiskScore() : 0.0,
-                        a.getRiskScore() != null ?
-                 a.getRiskScore() : 0.0))
+                        a.getRiskScore() != null ? a.getRiskScore() : 0.0))
                 .limit(5)
-                
                 .map(a -> DashboardStatsDTO.CriticalAssetDTO.builder()
                         .id(a.getEquipment().getId())
                         .name(a.getEquipment().getName())
                         .type(a.getEquipment().getType())
-            
                         .quartier(a.getEquipment().getQuartier())
                         .probability(a.getRiskScore())
                         .urgency(a.getUrgencyLevel())
