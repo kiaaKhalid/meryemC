@@ -12,6 +12,7 @@ import com.meryem.maintenance.repository.MaintenanceAlertRepository;
 import com.meryem.maintenance.service.WeatherService;
 import com.meryem.maintenance.service.DashboardService;
 import com.meryem.maintenance.dto.DashboardStatsDTO;
+import com.meryem.maintenance.dto.DetailedAIPredictionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -22,8 +23,10 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Controller for the Industrial Diagnostic Dashboard.
+ */
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
@@ -47,7 +50,6 @@ public class DashboardController {
         Equipment equipment = equipmentRepository.findById(equipmentId)
                 .orElseThrow(() -> new RuntimeException("Equipment not found"));
 
-        // 1. Fetch Latest Risk History
         List<MaintenanceAlert> alerts = alertRepository.findByEquipmentIdOrderByAlertDateDesc(equipmentId,
                 PageRequest.of(0, 10));
 
@@ -58,11 +60,9 @@ public class DashboardController {
                         .build())
                 .toList();
 
-        // 2. Fetch Live 7-Day Casablanca Forecast (Comprehensive)
         List<WeatherRequest> weatherList = weatherService.getWeeklyForecast();
         List<PredictionResponse> predictions = predictionClient.getWeeklyPredictions(weatherList);
 
-        // 3. Map to Dashboard Forecast DTO
         List<KPIDashboardDTO.DailyForecast> forecast = new ArrayList<>();
         for (int i = 0; i < weatherList.size(); i++) {
             WeatherRequest w = weatherList.get(i);
@@ -79,8 +79,8 @@ public class DashboardController {
                     .uvIndex(w.getUvIndex())
                     .visibility(w.getVisibility())
                     .dewPoint(w.getDewPoint())
-                    .windSpeed(w.getWind_speed())
-                    .wmoCode(Boolean.TRUE.equals(w.getIs_lightning()) ? 95 : 0) // Simplified mapping
+                    .windSpeed(w.getWindSpeed())
+                    .wmoCode(Boolean.TRUE.equals(w.getIsLightning()) ? 95 : 0)
                     .build());
         }
 
@@ -99,97 +99,45 @@ public class DashboardController {
         return ResponseEntity.ok(dashboard);
     }
 
-    /**
-     * Fleet Intelligence: Aggregates risk telemetry for ALL industrial assets.
-     * Computes city-wide average risk while adhering to worst-case recommendation logic.
-     */
     @GetMapping("/fleet-kpi")
     public ResponseEntity<KPIDashboardDTO> getFleetKPI() {
         List<Equipment> equipments = equipmentRepository.findAll();
         if (equipments.isEmpty()) {
-            return ResponseEntity.ok(createEmptyKPIDashboard());
+            return ResponseEntity.ok(KPIDashboardDTO.builder().equipmentName("N/A").forecast(new ArrayList<>()).build());
         }
 
         List<WeatherRequest> weatherList = weatherService.getWeeklyForecast();
         List<PredictionResponse> basePredictions = predictionClient.getWeeklyPredictions(weatherList);
 
         int daysCount = (basePredictions != null) ? basePredictions.size() : 7;
-        double[][] fleetGrid = calculateFleetGrid(equipments, basePredictions, daysCount);
-        
-        List<KPIDashboardDTO.DailyForecast> fleetForecast = generateFleetForecast(equipments.size(), daysCount, fleetGrid, weatherList, basePredictions);
-        double fleetCurrentTotal = calculateCurrentFleetTotal(fleetGrid, equipments.size());
-
-        KPIDashboardDTO globalDashboard = KPIDashboardDTO.builder()
-                .equipmentId(0L)
-                .equipmentName("Flotte de Casablanca (Global)")
-                .currentRiskScore(Math.round(fleetCurrentTotal * 10.0) / 10.0)
-                .recommendation(fleetCurrentTotal > 60 ? "ALERTE FLOTTE : Maintenance Requise" : "SYSTÈME FLOTTE NOMINAL")
-                .urgencyLevel(calculateUrgencyLevel(fleetCurrentTotal))
-                .history(new ArrayList<>())
-                .forecast(fleetForecast)
-                .build();
-
-        return ResponseEntity.ok(globalDashboard);
-    }
-
-    private KPIDashboardDTO createEmptyKPIDashboard() {
-        return KPIDashboardDTO.builder()
-                .equipmentName("Aucun équipement trouvé")
-                .currentRiskScore(0.0)
-                .forecast(new ArrayList<>())
-                .build();
-    }
-
-    private double[][] calculateFleetGrid(List<Equipment> equipments, List<PredictionResponse> basePredictions, int daysCount) {
         double[][] fleetGrid = new double[equipments.size()][daysCount];
         for (int eIdx = 0; eIdx < equipments.size(); eIdx++) {
-            Equipment eq = equipments.get(eIdx);
-            double equipmentOffset = calculateEquipmentOffset(eq);
+            double offset = calculateEquipmentOffset(equipments.get(eIdx));
             for (int dIdx = 0; dIdx < daysCount; dIdx++) {
-                double baseScore = (basePredictions != null && dIdx < basePredictions.size()) 
-                                   ? basePredictions.get(dIdx).getRisk_score() : 15.0;
-                fleetGrid[eIdx][dIdx] = Math.min(95.0, baseScore + equipmentOffset);
+                double base = (basePredictions != null && dIdx < basePredictions.size()) ? basePredictions.get(dIdx).getRisk_score() : 15.0;
+                fleetGrid[eIdx][dIdx] = Math.min(95.0, base + offset);
             }
         }
-        return fleetGrid;
-    }
-
-    private List<KPIDashboardDTO.DailyForecast> generateFleetForecast(int eqCount, int daysCount, double[][] fleetGrid, List<WeatherRequest> weatherList, List<PredictionResponse> basePredictions) {
+        
         List<KPIDashboardDTO.DailyForecast> fleetForecast = new ArrayList<>();
         for (int dIdx = 0; dIdx < daysCount; dIdx++) {
             double dailySum = 0;
-            for (int eIdx = 0; eIdx < eqCount; eIdx++) {
-                dailySum += fleetGrid[eIdx][dIdx];
-            }
-            double dailyAvg = dailySum / eqCount;
-
+            for (int eIdx = 0; eIdx < equipments.size(); eIdx++) dailySum += fleetGrid[eIdx][dIdx];
+            double avg = dailySum / equipments.size();
+            
             WeatherRequest w = (weatherList != null && dIdx < weatherList.size()) ? weatherList.get(dIdx) : new WeatherRequest();
-            PredictionResponse p = (basePredictions != null && dIdx < basePredictions.size()) ? basePredictions.get(dIdx) : new PredictionResponse();
-
             fleetForecast.add(KPIDashboardDTO.DailyForecast.builder()
                     .date("Jour " + (dIdx + 1))
-                    .riskScore(Math.round(dailyAvg * 10.0) / 10.0)
-                    .recommendation(p.getRecommendation() != null ? p.getRecommendation() : "Surveillance")
-                    .urgencyLevel(calculateUrgencyLevel(dailyAvg))
+                    .riskScore(Math.round(avg * 10.0) / 10.0)
                     .temp(w.getTemperature())
                     .humidity(w.getHumidity())
-                    .pressure(w.getPressure())
-                    .uvIndex(w.getUvIndex())
-                    .visibility(w.getVisibility())
-                    .dewPoint(w.getDewPoint())
-                    .windSpeed(w.getWind_speed())
-                    .wmoCode(Boolean.TRUE.equals(w.getIs_lightning()) ? 95 : 0)
                     .build());
         }
-        return fleetForecast;
-    }
 
-    private double calculateCurrentFleetTotal(double[][] fleetGrid, int eqCount) {
-        double currentTotal = 0;
-        for (int eIdx = 0; eIdx < eqCount; eIdx++) {
-            currentTotal += fleetGrid[eIdx][0];
-        }
-        return currentTotal / eqCount;
+        return ResponseEntity.ok(KPIDashboardDTO.builder()
+                .equipmentName("Global")
+                .forecast(fleetForecast)
+                .build());
     }
 
     @GetMapping("/fleet-day-details/{dayIndex}")
@@ -197,57 +145,36 @@ public class DashboardController {
         List<WeatherRequest> weatherList = weatherService.getWeeklyForecast();
         List<PredictionResponse> predictions = predictionClient.getWeeklyPredictions(weatherList);
         
-        if (predictions == null || dayIndex >= predictions.size()) {
-            return ResponseEntity.badRequest().build();
-        }
+        if (predictions == null || dayIndex >= predictions.size()) return ResponseEntity.badRequest().build();
 
         PredictionResponse p = predictions.get(dayIndex);
-        LocalDate date = LocalDate.now().plusDays(dayIndex);
-        
         List<FleetDayRiskDTO.EquipmentRiskDetail> details = equipmentRepository.findAll().stream()
             .map(eq -> {
-                double finalScore = Math.min(98.0, (p.getRisk_score() != null ? p.getRisk_score() : 15.0) + calculateEquipmentOffset(eq));
+                double score = Math.min(98.0, (p.getRisk_score() != null ? p.getRisk_score() : 15.0) + calculateEquipmentOffset(eq));
                 return FleetDayRiskDTO.EquipmentRiskDetail.builder()
                     .id(eq.getId())
                     .name(eq.getName())
-                    .type(eq.getType())
-                    .quartier(eq.getQuartier())
-                    .riskScore(Math.round(finalScore * 10.0) / 10.0)
-                    .urgencyLevel(calculateUrgencyLevel(finalScore))
+                    .riskScore(Math.round(score * 10.0) / 10.0)
+                    .urgencyLevel(score > 60 ? "CRITICAL" : "LOW")
                     .build();
-            })
-            .sorted((a, b) -> b.getRiskScore().compareTo(a.getRiskScore()))
-            .toList();
+            }).toList();
 
-        return ResponseEntity.ok(FleetDayRiskDTO.builder()
-            .date(date.toString())
-            .dayName(dayIndex == 0 ? "Aujourd'hui" : getDayName(date))
-            .equipments(details)
-            .build());
+        return ResponseEntity.ok(FleetDayRiskDTO.builder().date(LocalDate.now().plusDays(dayIndex).toString()).equipments(details).build());
+    }
+
+    @GetMapping("/equipment-prediction/{id}/{dayIndex}")
+    public ResponseEntity<DetailedAIPredictionDTO> getEquipmentPrediction(@PathVariable Long id, @PathVariable Integer dayIndex) {
+        return ResponseEntity.ok(dashboardService.getDetailedAIPrediction(id, dayIndex));
     }
 
     private double calculateEquipmentOffset(Equipment eq) {
-        LocalDate installDate = eq.getInstallationDate();
-        int age = installDate != null ? (int) ChronoUnit.YEARS.between(installDate, LocalDate.now()) : 0;
+        int age = eq.getInstallationDate() != null ? (int) ChronoUnit.YEARS.between(eq.getInstallationDate(), LocalDate.now()) : 0;
         return (age * 0.15) + (eq.getId() % 5);
     }
 
-    private String calculateUrgencyLevel(double score) {
-        if (score > 60) return "CRITICAL";
-        if (score > 30) return "HIGH";
-        return "LOW";
-    }
-
-    private String getDayName(LocalDate date) {
-        String[] dayNames = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
-        return dayNames[date.getDayOfWeek().getValue() % 7];
-    }
-
-    private MaintenanceStatus calculateCurrentStatus(List<PredictionResponse> predictions) {
-        if (predictions.isEmpty())
-            return new MaintenanceStatus(0.0, "N/A", "NORMAL");
-        PredictionResponse first = predictions.get(0);
-        return new MaintenanceStatus(first.getRisk_score(), first.getRecommendation(), first.getUrgency_level());
+    private MaintenanceStatus calculateCurrentStatus(List<PredictionResponse> p) {
+        if (p.isEmpty()) return new MaintenanceStatus(0.0, "N/A", "NORMAL");
+        return new MaintenanceStatus(p.get(0).getRisk_score(), p.get(0).getRecommendation(), p.get(0).getUrgency_level());
     }
 
     private static class MaintenanceStatus {
@@ -261,5 +188,4 @@ public class DashboardController {
             this.urgency = u;
         }
     }
-}
 }

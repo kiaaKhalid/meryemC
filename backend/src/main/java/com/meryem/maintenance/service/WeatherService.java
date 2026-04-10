@@ -58,8 +58,8 @@ public class WeatherService {
                 fallback.setTemperature(22.0 + (i % 3)); // Average Casa Spring temp
                 fallback.setHumidity(70.0);
                 fallback.setPressure(1013.0);
-                fallback.setWind_speed(15.0);
-                fallback.setIs_lightning(false);
+                fallback.setWindSpeed(15.0);
+                fallback.setIsLightning(false);
                 fallbackRequests.add(fallback);
             }
             return fallbackRequests;

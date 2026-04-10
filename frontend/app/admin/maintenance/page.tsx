@@ -96,13 +96,8 @@ export default function AdminMaintenancePage() {
     fetchData();
   }, []);
 
-  if (isLoading && equipments.length === 0) {
-    return (
-      <div className="flex min-h-screen bg-bg-main items-center justify-center">
-        <Orbit className="text-blue-500 animate-spin" size={48} />
-      </div>
-    );
-  }
+  // Reduced loading barrier to allow persistent Sidebar rendering
+  const showContent = !isLoading || equipments.length > 0;
 
 
   if (error) {
@@ -125,74 +120,80 @@ export default function AdminMaintenancePage() {
 
       {/* 2. Main Content */}
       <main className="flex-1 h-screen overflow-y-auto">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="p-8 md:p-12 max-w-7xl mx-auto w-full"
-        >
-          {/* Header Section */}
-          <MaintenanceHeader
-            score={data.currentRiskScore}
-            isSimulation={data.isSimulation}
-            isOffline={data.isOffline}
-          />
+        {!showContent ? (
+          <div className="flex h-full items-center justify-center">
+            <Orbit className="text-blue-500 animate-spin" size={48} />
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="p-8 md:p-12 max-w-7xl mx-auto w-full"
+          >
+            {/* Header Section */}
+            <MaintenanceHeader
+              score={data.currentRiskScore}
+              isSimulation={data.isSimulation}
+              isOffline={data.isOffline}
+            />
 
-          {/* Top Section: Map & Config */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-            <div className="lg:col-span-2">
-              {/* Glass Map Container */}
-              <div className="bg-bg-card/80 border border-border-main rounded-3xl p-6 shadow-2xl relative overflow-hidden group h-[450px] flex flex-col transition-colors duration-300">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-2">
-                    <Navigation2 size={14} className="text-blue-500/70" strokeWidth={3} />
-                    <h3 className="text-xs font-black text-text-dim uppercase tracking-[0.2em] transition-colors duration-300">Géolocalisation de la Flotte</h3>
-                    <div className="group/info relative ml-1">
-                      <Info size={14} className="text-text-dim/60 cursor-help hover:text-blue-500 transition-colors" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-bg-card text-text-dim text-xs rounded-lg opacity-0 group-hover/info:opacity-100 transition-all duration-300 pointer-events-none z-50 shadow-2xl border border-border-main backdrop-blur-xl italic text-center">
-                        Visualisation en temps réel de tous les actifs industriels sur le maillage de Casablanca.
+            {/* Top Section: Map & Config */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+              <div className="lg:col-span-2">
+                {/* Glass Map Container */}
+                <div className="bg-bg-card/80 border border-border-main rounded-3xl p-6 shadow-2xl relative overflow-hidden group h-[450px] flex flex-col transition-colors duration-300">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2">
+                      <Navigation2 size={14} className="text-blue-500/70" strokeWidth={3} />
+                      <h3 className="text-xs font-black text-text-dim uppercase tracking-[0.2em] transition-colors duration-300">Géolocalisation de la Flotte</h3>
+                      <div className="group/info relative ml-1">
+                        <Info size={14} className="text-text-dim/60 cursor-help hover:text-blue-500 transition-colors" />
+                        <div className="absolute bottom-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-10 translate-y-2 group-hover:translate-y-0 text-text-main">
+                          Visualisation en temps réel de tous les actifs industriels sur le maillage de Casablanca.
+                        </div>
                       </div>
                     </div>
+                    <MoreHorizontal size={16} className="text-text-dim cursor-pointer hover:text-text-main transition-colors" />
                   </div>
-                  <MoreHorizontal size={16} className="text-text-dim cursor-pointer hover:text-text-main transition-colors" />
-                </div>
-                
-                <div className="flex-1 w-full rounded-2xl overflow-hidden border border-border-main relative bg-bg-main/20 min-h-0">
-                  <EquipmentMap 
-                    equipments={equipments} 
-                    onEquipmentClick={handleEquipmentClick}
-                  />
                   
-                  {/* Map Stats Overlay */}
-                  <div className="absolute bottom-4 right-4 z-[1000] p-3 bg-bg-card/90 backdrop-blur-md rounded-xl border border-border-main shadow-2xl space-y-2 transition-colors duration-300">
-                    <div className="flex items-center justify-between gap-6">
-                      <span className="text-xs font-black text-text-dim uppercase tracking-widest">Actifs</span>
-                      <span className="text-sm font-black text-text-main italic">{equipments.length}</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-6">
-                      <span className="text-xs font-black text-text-dim uppercase tracking-widest">IA SRM</span>
-                      <span className="text-sm font-black text-emerald-500 italic">ON</span>
+                  <div className="flex-1 w-full rounded-2xl overflow-hidden border border-border-main relative bg-bg-main/20 min-h-0">
+                    <EquipmentMap 
+                      equipments={equipments} 
+                      onEquipmentClick={handleEquipmentClick}
+                    />
+                    
+                    {/* Map Stats Overlay */}
+                    <div className="absolute bottom-4 right-4 z-[1000] p-3 bg-bg-card/90 backdrop-blur-md rounded-xl border border-border-main shadow-2xl space-y-2 transition-colors duration-300">
+                      <div className="flex items-center justify-between gap-6">
+                        <span className="text-xs font-black text-text-dim uppercase tracking-widest">Actifs</span>
+                        <span className="text-sm font-black text-text-main italic">{equipments.length}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-6">
+                        <span className="text-xs font-black text-text-dim uppercase tracking-widest">IA SRM</span>
+                        <span className="text-sm font-black text-emerald-500 italic">ON</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <div>
+                <ConfigPanel
+                  currentRisk={data.currentRiskScore}
+                  initialThreshold={60}
+                  lastNotification={data.lastNotification}
+                />
+              </div>
             </div>
-            <div>
-              <ConfigPanel
-                currentRisk={data.currentRiskScore}
-                initialThreshold={60}
-                lastNotification={data.lastNotification}
+
+            {/* Weekly View Section */}
+            <div className="space-y-6">
+              <WeeklyForecast 
+                forecast={data.forecast} 
+                onDayClick={handleDayClick}
               />
             </div>
-          </div>
-
-          {/* Weekly View Section */}
-          <div className="space-y-6">
-            <WeeklyForecast 
-              forecast={data.forecast} 
-              onDayClick={handleDayClick}
-            />
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
       </main>
 
       {/* 3. Settings Modal */}

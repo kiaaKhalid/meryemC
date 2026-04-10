@@ -1,0 +1,4 @@
+# Pyrefly configuration for predictive-service.
+# Points to the venv Python interpreter so the IDE resolves all ML library imports.
+[python]
+interpreter = "/Users/kiaakhalidgmail/Project/meryem/predictive-service/venv/bin/python3"

@@ -47,7 +47,7 @@ public class WeatherMapper {
             // Map Daily fields
             request.setTemperature(Double.valueOf(temps.get(i).toString()));
             request.setPrecipitation(Double.valueOf(precipitations.get(i).toString()));
-            request.setWind_speed(Double.valueOf(winds.get(i).toString()));
+            request.setWindSpeed(Double.valueOf(winds.get(i).toString()));
 
             // Map Hourly fields (sampling midday)
             request.setHumidity(Double.valueOf(humidities.get(sampleIdx).toString()));
@@ -61,7 +61,7 @@ public class WeatherMapper {
             // Logic for isLightning based on WMO codes: 95, 96, 99
             int code = Integer.parseInt(weatherCodes.get(i).toString());
             boolean isLightning = (code == 95 || code == 96 || code == 99);
-            request.setIs_lightning(isLightning);
+            request.setIsLightning(isLightning);
             
             requests.add(request);
         }
