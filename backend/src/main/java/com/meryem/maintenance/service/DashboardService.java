@@ -32,28 +32,27 @@ public class DashboardService {
         List<Incident> incidents = incidentRepository.findAll();
         List<MaintenanceAlert> activeAlerts = alertRepository.findAll();
         
-        // Fetch Real-Time Predictions from Keras Model
-
-        List<ExpertPredictionResponse> predictions = predictionClient.getExpertPredictions(
-            forecast != null && !forecast.isEmpty() ? List.of(forecast.get(
-
+        List<WeatherRequest> forecast = weatherService.getWeeklyForecast();
         
-        ExpertPredictionResponse globalRisk = (predictions != null && !predictions.isEmpty()) 
-            ? predictions.get(0) : new ExpertPredictionResponse
-                
-                rn Dashboa
-                    .evar(calculateEVaR(equipments, activeAlerts))
-          
+        List<ExpertPredictionResponse> predictions = (forecast != null && !forecast.isEmpty())
+            ? predictionClient.getExpertPredictions(List.of(forecast.get(0)))
+            : Collections.emptyList();
+        
+        ExpertPredictionResponse globalRisk = (!predictions.isEmpty()) 
+            ? predictions.get(0) : ExpertPredictionResponse.builder().risk_score(15.0).build();
 
+        return DashboardStatsDTO.builder()
+                .evar(calculateEVaR(equipments, activeAlerts))
+                .irg(calculateIRG(incidents, activeAlerts))
+                .populationShield(calculatePopulationShield(equipments, activeAlerts))
                 .roiSavings(calculateROI(incidents))
-
+                .networkAvailability(calculateAvailability(incidents))
                 .anticipationRate(calculateAnticipationRate(incidents))
-                    .mttrCollapsed(c
-                lculateMTTRCollapsed(incidents, equipments))
+                .mttrCollapsed(calculateMTTRCollapsed(incidents, equipments))
                 .iaConfidenceScore(globalRisk.getRisk_score() != null ? 100.0 - (globalRisk.getRisk_score() / 10.0) : 92.5)
                 .top5CriticalAssets(getTop5CriticalAssets(equipments, activeAlerts))
                 .pressureIndex(calculatePressureIndex(forecast))
-                .acceleratedDegradationRate(12.5) // Real logic would involve historical drift analysis
+                .acceleratedDegradationRate(12.5)
                 .slaRuptureProbability(calculateSLARuptureProb(activeAlerts))
                 .build();
     }

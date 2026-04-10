@@ -23,7 +23,7 @@ export default function UserManageModal({ user, isOpen, onClose }: UserManageMod
       setCompteData(user.compte || { status: 'ACTIVE' });
     } else {
       setFormData({
-        role: 'OPERATOR',
+        role: 'VISITOR',
       });
       setCompteData({
         status: 'ACTIVE',
@@ -151,14 +151,13 @@ export default function UserManageModal({ user, isOpen, onClose }: UserManageMod
                     <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">Rôle Système</label>
                     <div className="relative group">
                        <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-text-dim group-focus-within:text-blue-400 transition-colors" size={16} />
-                       <select
+                      <select
                         value={formData.role || ''}
                         onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                         className="w-full bg-bg-hover border border-border-main rounded-xl pl-12 pr-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-blue-500/50 transition-all appearance-none"
                       >
                         <option value="ADMIN" className="bg-bg-modal">ADMIN</option>
-                        <option value="OPERATOR" className="bg-bg-modal">OPERATOR</option>
-                        <option value="ANALYST" className="bg-bg-modal">ANALYST</option>
+                        <option value="VISITOR" className="bg-bg-modal">VISITOR</option>
                       </select>
                     </div>
                   </div>

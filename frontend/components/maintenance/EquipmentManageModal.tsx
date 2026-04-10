@@ -26,9 +26,13 @@ export default function EquipmentManageModal({ equipment, isOpen, onClose }: Equ
         zoneDensity: 'INDUSTRIELLE',
         installationDate: new Date().toISOString().split('T')[0],
         mttr: 4.0,
+        standardMttr: 6.0,
         latitude: 33.5731,
         longitude: -7.5898,
-        nearbyWork: false
+        financialValue: 50000.0,
+        clientsAffected: 1500,
+        nearbyWork: false,
+        description: 'Nouvel actif industriel...'
       });
     }
   }, [equipment, isOpen]);
@@ -96,14 +100,14 @@ export default function EquipmentManageModal({ equipment, isOpen, onClose }: Equ
                 {/* Basic Info */}
                 <div className="space-y-4">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">Nom de l'Équipement</label>
+                    <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">Désignation de l'Actif / Activité</label>
                     <input
                       required
                       type="text"
                       value={formData.name || ''}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Ex: Transformateur-A1"
-                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/50 transition-all"
+                      placeholder="Ex: Transformateur Casablanca Hub"
+                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold placeholder:text-text-muted/50 focus:outline-none focus:border-indigo-500/50 transition-all font-sans"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
@@ -129,9 +133,13 @@ export default function EquipmentManageModal({ equipment, isOpen, onClose }: Equ
                       required
                       type="number"
                       step="any"
-                      value={formData.latitude || ''}
-                      onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) })}
-                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all"
+                      placeholder="33.5731"
+                      value={formData.latitude ?? ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, latitude: val === '' ? undefined : parseFloat(val) });
+                      }}
+                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
@@ -140,12 +148,28 @@ export default function EquipmentManageModal({ equipment, isOpen, onClose }: Equ
                       required
                       type="number"
                       step="any"
-                      value={formData.longitude || ''}
-                      onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) })}
-                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all"
+                      placeholder="-7.5898"
+                      value={formData.longitude ?? ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, longitude: val === '' ? undefined : parseFloat(val) });
+                      }}
+                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Technical Description */}
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">Définition Technique / Notes</label>
+                <textarea
+                  value={formData.description || ''}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Détails sur l'utilisation, caractéristiques techniques ou notes d'installation..."
+                  rows={2}
+                  className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold placeholder:text-text-muted/50 focus:outline-none focus:border-indigo-500/50 transition-all resize-none font-sans"
+                />
               </div>
 
               <div className="grid grid-cols-3 gap-6">
@@ -196,17 +220,53 @@ export default function EquipmentManageModal({ equipment, isOpen, onClose }: Equ
                       type="date"
                       value={formData.installationDate || ''}
                       onChange={(e) => setFormData({ ...formData, installationDate: e.target.value })}
-                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [color-scheme:dark]"
+                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [color-scheme:light] dark:[color-scheme:dark]"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">MTTR (Heures)</label>
+                    <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">Standard MTTR (Hrs)</label>
                     <input
                       type="number"
                       step="0.1"
-                      value={formData.mttr || 0}
-                      onChange={(e) => setFormData({ ...formData, mttr: parseFloat(e.target.value) })}
-                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all"
+                      placeholder="6.0"
+                      value={formData.standardMttr ?? ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, standardMttr: val === '' ? undefined : parseFloat(val) });
+                      }}
+                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">Valeur Financière (MAD)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        placeholder="50000"
+                        value={formData.financialValue ?? ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFormData({ ...formData, financialValue: val === '' ? undefined : parseFloat(val) });
+                        }}
+                        className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500/50 italic">MAD</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] text-text-dim font-black uppercase tracking-widest ml-1">Population Connectée</label>
+                    <input
+                      type="number"
+                      placeholder="1500"
+                      value={formData.clientsAffected ?? ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, clientsAffected: val === '' ? undefined : parseInt(val) });
+                      }}
+                      className="w-full bg-bg-input border border-border-main rounded-xl px-4 py-3 text-text-main text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
               </div>

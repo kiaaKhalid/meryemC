@@ -16,7 +16,7 @@ import {
 } from '@/services/maintenanceService';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { Navigation2, Info, MoreHorizontal } from 'lucide-react';
+import { Navigation2, Info, MoreHorizontal, Orbit } from 'lucide-react';
 import DailyRiskModal from '@/components/maintenance/DailyRiskModal';
 import EquipmentDiagnosticModal from '@/components/maintenance/EquipmentDiagnosticModal';
 
@@ -56,6 +56,7 @@ export default function AdminMaintenancePage() {
   const [isLoadingDay, setIsLoadingDay] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,6 +86,7 @@ export default function AdminMaintenancePage() {
         
         setData(maintenanceData);
         setEquipments(equipmentList);
+        setIsLoading(false);
         setError(null);
       } catch (err) {
         console.error("Global Fleet Fetch Error:", err);
@@ -93,6 +95,14 @@ export default function AdminMaintenancePage() {
     };
     fetchData();
   }, []);
+
+  if (isLoading && equipments.length === 0) {
+    return (
+      <div className="flex min-h-screen bg-bg-main items-center justify-center">
+        <Orbit className="text-blue-500 animate-spin" size={48} />
+      </div>
+    );
+  }
 
 
   if (error) {

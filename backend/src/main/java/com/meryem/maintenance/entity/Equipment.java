@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.validation.constraints.NotNull;
+
 @Entity
 @Table(name = "equipments")
 @Data
@@ -17,9 +19,20 @@ public class Equipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Column(nullable = false)
     private String name;
+
+    @NotNull
+    @Column(nullable = false)
     private String type;
+
+    @NotNull
+    @Column(nullable = false)
     private Double latitude;
+
+    @NotNull
+    @Column(nullable = false)
     private Double longitude;
 
     // --- ENHANCED TELEMETRY & CONTEXT ---

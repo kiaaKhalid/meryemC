@@ -85,54 +85,57 @@ const LeafletMap = ({ equipments, onEquipmentClick }: Props) => {
         />
 
         {/* Dynamic Industrial Pins: Casablanca Industrial Fleet */}
-        {Array.isArray(equipments) && equipments.map((eq) => {
-          const score = eq.weeklyRiskAverage || 0;
-          return (
-            <Marker 
-              key={`${eq.id}-${eq.latitude}-${eq.longitude}`} 
-              position={[eq.latitude, eq.longitude]} 
-              icon={createPulseIcon(score) as L.DivIcon}
-              eventHandlers={{
-                click: () => onEquipmentClick?.(eq.id),
-              }}
-            >
-              <Tooltip direction="top" offset={[0, -16]} opacity={1} permanent={false}>
-                <div className="bg-bg-card border border-border-main p-3 rounded-xl shadow-2xl backdrop-blur-md min-w-[200px] transition-colors duration-300">
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-[10px] font-black text-text-main uppercase tracking-widest">{eq.name}</p>
-                    <span className="text-[9px] font-black italic ml-2" style={{ color: getRiskColor(score) }}>
-                      {score}%
-                    </span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 pb-2 border-b border-white/5 mb-2">
-                    <div>
-                      <p className="text-[7px] text-slate-500 uppercase font-black">Quartier</p>
-                      <p className="text-[8px] text-white font-bold">{eq.quartier || 'N/A'}</p>
+        {Array.isArray(equipments) && equipments
+          .filter(eq => eq.latitude !== null && eq.longitude !== null && eq.latitude !== undefined && eq.longitude !== undefined)
+          .map((eq) => {
+            const score = eq.weeklyRiskAverage || 0;
+            return (
+              <Marker 
+                key={`${eq.id}-${eq.latitude}-${eq.longitude}`} 
+                position={[eq.latitude, eq.longitude]} 
+                icon={createPulseIcon(score) as L.DivIcon}
+                eventHandlers={{
+                  click: () => onEquipmentClick?.(eq.id),
+                }}
+              >
+                <Tooltip direction="top" offset={[0, -16]} opacity={1} permanent={false}>
+                  <div className="bg-bg-card border border-border-main p-3 rounded-xl shadow-2xl backdrop-blur-md min-w-[200px] transition-colors duration-300">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-[10px] font-black text-text-main uppercase tracking-widest">{eq.name || 'Actif Inconnu'}</p>
+                      <span className="text-[9px] font-black italic ml-2" style={{ color: getRiskColor(score) }}>
+                        {score}%
+                      </span>
                     </div>
-                    <div>
-                      <p className="text-[7px] text-slate-500 uppercase font-black">Age</p>
-                      <p className="text-[8px] text-white font-bold">{eq.age} ans</p>
+                    
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 pb-2 border-b border-white/5 mb-2">
+                      <div>
+                        <p className="text-[7px] text-slate-500 uppercase font-black">Quartier</p>
+                        <p className="text-[8px] text-white font-bold">{eq.quartier || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[7px] text-slate-500 uppercase font-black">Age</p>
+                        <p className="text-[8px] text-white font-bold">{eq.age || 0} ans</p>
+                      </div>
+                      <div>
+                        <p className="text-[7px] text-slate-500 uppercase font-black">MTTR</p>
+                        <p className="text-[8px] text-blue-400 font-bold">{eq.mttr || 0}h</p>
+                      </div>
+                      <div>
+                        <p className="text-[7px] text-slate-500 uppercase font-black">Freq. Panne</p>
+                        <p className="text-[8px] text-orange-400 font-bold">{eq.faultFrequency || 0}/an</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[7px] text-slate-500 uppercase font-black">MTTR</p>
-                      <p className="text-[8px] text-blue-400 font-bold">{eq.mttr}h</p>
-                    </div>
-                    <div>
-                      <p className="text-[7px] text-slate-500 uppercase font-black">Freq. Panne</p>
-                      <p className="text-[8px] text-orange-400 font-bold">{eq.faultFrequency}/an</p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-1.5 mt-1">
-                     <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: getRiskColor(score) }} />
-                     <span className="text-[7px] text-slate-400 font-bold uppercase tracking-widest">IA : Moyenne Hebdo</span>
+                    <div className="flex items-center gap-1.5 mt-1">
+                       <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: getRiskColor(score) }} />
+                       <span className="text-[7px] text-slate-400 font-bold uppercase tracking-widest">IA : Moyenne Hebdo</span>
+                    </div>
                   </div>
-                </div>
-              </Tooltip>
-            </Marker>
-          );
-        })}
+                </Tooltip>
+              </Marker>
+            );
+          })
+        }
       </MapContainer>
 
       {/* Map Aesthetic Overlay (Legend/Vignette) */}

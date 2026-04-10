@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 interface AuthContextType {
     user: UserProfile | null;
     isLoading: boolean;
+    isAdmin: boolean;
     login: (user: UserProfile) => void;
     logout: () => void;
     updateUser: (user: UserProfile) => void;
@@ -28,6 +29,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
     }, []);
 
+    const isAdmin = user?.role === 'ADMIN';
+
     const login = (newUser: UserProfile) => {
         setUser(newUser);
         localStorage.setItem('monitor_ai_user', JSON.stringify(newUser));
@@ -47,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser }}>
+        <AuthContext.Provider value={{ user, isLoading, isAdmin, login, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Cpu, Activity, Clock, Zap, MapPin, 
-  ChevronRight 
+import {
+  X, Cpu, Activity, Clock, Zap, MapPin,
+  ChevronRight
 } from 'lucide-react';
 import { getEquipmentDetail, EquipmentDetail, RiskForecast } from '@/services/maintenanceService';
 
@@ -73,7 +73,7 @@ export default function EquipmentDiagnosticModal({ id, isOpen, onClose }: Equipm
                 </div>
               </div>
 
-               <div className="space-y-6">
+              <div className="space-y-6">
                 <div className="flex flex-col gap-1.5">
                   <span className="text-xs text-text-dim font-black uppercase tracking-widest">Localisation</span>
                   <div className="flex items-center gap-2 text-text-main font-bold italic text-base">
@@ -138,7 +138,7 @@ export default function EquipmentDiagnosticModal({ id, isOpen, onClose }: Equipm
                       transition={{ delay: idx * 0.05 }}
                       className="group bg-bg-main/5 hover:bg-bg-main/10 border border-border-main rounded-2xl p-5 flex items-center justify-between transition-all duration-300 shadow-sm"
                     >
-                       <div className="flex items-center gap-5">
+                      <div className="flex items-center gap-5">
                         <div className="text-center w-16">
                           <span className="block text-xs text-text-dim font-black uppercase tracking-widest mb-1">
                             {idx === 0 ? "Now" : "J+" + idx}

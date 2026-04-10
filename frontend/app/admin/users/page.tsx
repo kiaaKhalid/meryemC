@@ -7,13 +7,15 @@ import { getUsers, deleteUser, UserProfile } from '@/services/maintenanceService
 import UserCard from '@/components/maintenance/UserCard';
 import UserManageModal from '@/components/maintenance/UserManageModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, Search, Loader2, ShieldCheck, Database } from 'lucide-react';
+import { Users, Plus, Search, Loader2, ShieldCheck, Database, Orbit } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function UsersPage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const { isAdmin } = useAuth();
     
     // Status State
     const [manageUser, setManageUser] = useState<UserProfile | null | undefined>(undefined); // null = Create, undefined = Hidden
@@ -57,8 +59,8 @@ export default function UsersPage() {
     };
 
     if (loading && users.length === 0) return (
-        <div className="flex min-h-screen bg-bg-main items-center justify-center text-text-main italic font-black uppercase tracking-[1em] animate-pulse">
-            Analyse des Identités...
+        <div className="flex min-h-screen bg-bg-main items-center justify-center">
+            <Orbit className="text-blue-500 animate-spin" size={48} />
         </div>
     );
 
@@ -73,15 +75,17 @@ export default function UsersPage() {
                     className="p-8 md:p-12 max-w-7xl mx-auto w-full relative"
                 >
                     {/* Floating Add Button */}
-                    <button 
-                        onClick={() => setManageUser(null)}
-                        className="fixed bottom-10 right-10 z-50 w-20 h-20 rounded-[2.5rem] bg-blue-500 hover:bg-blue-600 shadow-[0_20px_50px_-10px_rgba(59,130,246,0.5)] flex items-center justify-center text-text-main transition-all hover:scale-110 active:scale-95 group"
-                    >
-                        <Plus size={32} className="group-hover:rotate-90 transition-transform duration-500" />
-                        <div className="absolute -top-14 right-0 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap shadow-2xl">
-                            Réserver un Profil
-                        </div>
-                    </button>
+                    {isAdmin && (
+                        <button 
+                            onClick={() => setManageUser(null)}
+                            className="fixed bottom-10 right-10 z-50 w-20 h-20 rounded-[2.5rem] bg-blue-500 hover:bg-blue-600 shadow-[0_20px_50px_-10px_rgba(59,130,246,0.5)] flex items-center justify-center text-text-main transition-all hover:scale-110 active:scale-95 group"
+                        >
+                            <Plus size={32} className="group-hover:rotate-90 transition-transform duration-500" />
+                            <div className="absolute -top-14 right-0 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap shadow-2xl">
+                                Réserver un Profil
+                            </div>
+                        </button>
+                    )}
 
                     {/* Page Header */}
                     <header className="mb-12">
@@ -167,8 +171,8 @@ export default function UsersPage() {
                                     >
                                         <UserCard 
                                             user={u} 
-                                            onEdit={(e) => handleEdit(u)}
-                                            onDelete={(e) => handleDelete(e, u.id)}
+                                            onEdit={isAdmin ? (e) => handleEdit(u) : undefined}
+                                            onDelete={isAdmin ? (e) => handleDelete(e, u.id) : undefined}
                                         />
                                     </motion.div>
                                 ))

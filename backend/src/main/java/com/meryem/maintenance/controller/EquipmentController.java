@@ -7,6 +7,7 @@ import com.meryem.maintenance.service.EquipmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class EquipmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Equipment> createEquipment(@RequestBody Equipment equipment) {
+    public ResponseEntity<Equipment> createEquipment(@Valid @RequestBody Equipment equipment) {
         return ResponseEntity.ok(equipmentService.saveEquipment(equipment));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Equipment> updateEquipment(@PathVariable Long id, @RequestBody Equipment equipment) {
+    public ResponseEntity<Equipment> updateEquipment(@PathVariable Long id, @Valid @RequestBody Equipment equipment) {
         equipment.setId(id);
         return ResponseEntity.ok(equipmentService.saveEquipment(equipment));
     }

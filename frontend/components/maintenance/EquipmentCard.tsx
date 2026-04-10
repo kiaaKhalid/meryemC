@@ -28,20 +28,26 @@ export default function EquipmentCard({ equipment, onClick, onEdit, onDelete }: 
       className="bg-white/5 border border-white/10 p-6 rounded-[2rem] hover:border-indigo-500/50 transition-all group relative overflow-hidden cursor-pointer"
     >
       {/* Admin Actions - Hover reveal */}
-      <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-10 translate-y-2 group-hover:translate-y-0">
-        <button 
-          onClick={onEdit}
-          className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500 hover:text-white transition-all shadow-lg"
-        >
-          <Edit size={16} />
-        </button>
-        <button 
-          onClick={onDelete}
-          className="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500 hover:text-white transition-all shadow-lg"
-        >
-          <Trash size={16} />
-        </button>
-      </div>
+      {(onEdit || onDelete) && (
+        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-10 translate-y-2 group-hover:translate-y-0">
+          {onEdit && (
+            <button 
+              onClick={onEdit}
+              className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500 hover:text-white transition-all shadow-lg"
+            >
+              <Edit size={16} />
+            </button>
+          )}
+          {onDelete && (
+            <button 
+              onClick={onDelete}
+              className="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500 hover:text-white transition-all shadow-lg"
+            >
+              <Trash size={16} />
+            </button>
+          )}
+        </div>
+      )}
       {/* Background Glow */}
       <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/10 blur-[80px] group-hover:bg-indigo-500/20 transition-all" />
 

@@ -30,6 +30,12 @@ public class UserService {
         if (user.getCompte() != null) {
             user.getCompte().setUser(user);
         }
+        
+        // Enforce Roles: ADMIN or VISITOR
+        if (user.getRole() == null || (!user.getRole().equals("ADMIN") && !user.getRole().equals("VISITOR"))) {
+            user.setRole("VISITOR");
+        }
+        
         return userRepository.save(user);
     }
 

@@ -5,7 +5,7 @@ import Sidebar from '@/components/Sidebar';
 import SettingsModal from '@/components/SettingsModal';
 import { getAllIncidents, Incident } from '@/services/maintenanceService';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { History, AlertTriangle, Clock, Search, Filter, Loader2, Orbit, CheckCircle } from 'lucide-react';
 
 export default function IncidentsPage() {
     const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -45,9 +45,9 @@ export default function IncidentsPage() {
         return <AlertTriangle className="text-rose-500" size={18} />;
     };
 
-    if (loading) return (
-        <div className="flex min-h-screen bg-bg-main items-center justify-center text-text-main italic font-black uppercase tracking-[1em] animate-pulse">
-            Extraction de l'Historique...
+    if (loading && incidents.length === 0) return (
+        <div className="flex min-h-screen bg-bg-main items-center justify-center">
+            <Orbit className="text-blue-500 animate-spin" size={48} />
         </div>
     );
 

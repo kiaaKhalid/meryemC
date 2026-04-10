@@ -8,7 +8,8 @@ import EquipmentCard from '@/components/maintenance/EquipmentCard';
 import EquipmentDiagnosticModal from '@/components/maintenance/EquipmentDiagnosticModal';
 import EquipmentManageModal from '@/components/maintenance/EquipmentManageModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, Server, MapPin, Search, Plus, Loader2 } from 'lucide-react';
+import { Cpu, Server, MapPin, Search, Plus, Loader2, Orbit } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function EquipmentsPage() {
     const [equipments, setEquipments] = useState<Equipment[]>([]);
@@ -19,6 +20,7 @@ export default function EquipmentsPage() {
     // Status State
     const [selectedEquipmentId, setSelectedEquipmentId] = useState<number | null>(null);
     const [manageEquipment, setManageEquipment] = useState<Equipment | null | undefined>(undefined); // null = Create, undefined = Hidden
+    const { isAdmin } = useAuth();
 
     const fetchData = async () => {
         setLoading(true);
@@ -60,8 +62,8 @@ export default function EquipmentsPage() {
     };
 
     if (loading && equipments.length === 0) return (
-        <div className="flex min-h-screen bg-bg-main items-center justify-center text-text-main italic font-black uppercase tracking-[1em] animate-pulse">
-            Analyse du Parc...
+        <div className="flex min-h-screen bg-bg-main items-center justify-center">
+            <Orbit className="text-blue-500 animate-spin" size={48} />
         </div>
     );
 
@@ -76,15 +78,17 @@ export default function EquipmentsPage() {
                     className="p-8 md:p-12 max-w-7xl mx-auto w-full relative"
                 >
                     {/* Floating Add Button */}
-                    <button 
-                        onClick={() => setManageEquipment(null)}
-                        className="fixed bottom-10 right-10 z-50 w-20 h-20 rounded-[2.5rem] bg-indigo-500 hover:bg-indigo-600 shadow-[0_20px_50px_-10px_rgba(79,70,229,0.5)] flex items-center justify-center text-text-main transition-all hover:scale-110 active:scale-95 group"
-                    >
-                        <Plus size={32} className="group-hover:rotate-90 transition-transform duration-500" />
-                        <div className="absolute -top-14 right-0 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap shadow-2xl">
-                            Ajouter un Actif
-                        </div>
-                    </button>
+                    {isAdmin && (
+                        <button 
+                            onClick={() => setManageEquipment(null)}
+                            className="fixed bottom-10 right-10 z-50 w-14 h-14 rounded-2xl bg-indigo-500 hover:bg-indigo-600 shadow-[0_15px_40px_-10px_rgba(79,70,229,0.5)] flex items-center justify-center text-text-main transition-all hover:scale-110 active:scale-95 group"
+                        >
+                            <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" />
+                            <div className="absolute -top-12 right-0 bg-white dark:bg-slate-800 text-black dark:text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap shadow-2xl border border-border-subtle">
+                                Ajouter un Actif
+                            </div>
+                        </button>
+                    )}
 
                     {/* Page Header */}
                     <header className="mb-12">
@@ -174,8 +178,8 @@ export default function EquipmentsPage() {
                                         <EquipmentCard 
                                             equipment={eq} 
                                             onClick={() => setSelectedEquipmentId(eq.id)}
-                                            onEdit={(e) => handleEdit(e, eq)}
-                                            onDelete={(e) => handleDelete(e, eq.id)}
+                                            onEdit={isAdmin ? (e) => handleEdit(e, eq) : undefined}
+                                            onDelete={isAdmin ? (e) => handleDelete(e, eq.id) : undefined}
                                         />
                                     </motion.div>
                                 ))

@@ -39,6 +39,10 @@ export interface Equipment {
     mttr?: number;
     zoneDensity?: 'COMMERCIALE' | 'INDUSTRIELLE' | 'RESIDENTIELLE';
     nearbyWork?: boolean;
+    description?: string;
+    standardMttr?: number;
+    financialValue?: number;
+    clientsAffected?: number;
     weeklyRiskAverage?: number;
 }
 
@@ -137,12 +141,13 @@ export const getMaintenanceData = async (equipmentId?: number): Promise<Maintena
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
 
-        const url = equipmentId 
+        const url = equipmentId
             ? `http://localhost:8080/api/dashboard/kpi/${equipmentId}`
             : `http://localhost:8080/api/dashboard/fleet-kpi`;
 
         const response = await fetch(url, {
-            signal: controller.signal
+            signal: controller.signal,
+            headers: { ...getAuthHeaders() }
         });
         clearTimeout(timeoutId);
 
@@ -334,11 +339,28 @@ export const mapRiskToUI = (score: number) => {
 const API_BASE = "http://localhost:8080/api";
 
 /**
+ * Helper to get authentication headers (Role-based for now).
+ */
+const getAuthHeaders = (): Record<string, string> => {
+    if (typeof window === 'undefined') return {};
+    const storedUser = localStorage.getItem('monitor_ai_user');
+    if (!storedUser) return {};
+    try {
+        const user = JSON.parse(storedUser);
+        return { 'X-User-Role': user.role || 'VISITOR' };
+    } catch {
+        return {};
+    }
+};
+
+/**
  * Fetch detailed diagnostic data for a specific asset, including its 7-day ML forecast.
  */
 export const getEquipmentDetail = async (id: number): Promise<EquipmentDetail | null> => {
     try {
-        const response = await fetch(`${API_BASE}/equipments/${id}`);
+        const response = await fetch(`${API_BASE}/equipments/${id}`, {
+            headers: { ...getAuthHeaders() }
+        });
         if (!response.ok) throw new Error("Could not fetch equipment detail");
         return await response.json();
     } catch (error) {
@@ -352,7 +374,9 @@ export const getEquipmentDetail = async (id: number): Promise<EquipmentDetail | 
  */
 export const getAllEquipments = async (): Promise<Equipment[]> => {
     try {
-        const response = await fetch(`${API_BASE}/equipments`);
+        const response = await fetch(`${API_BASE}/equipments`, {
+            headers: { ...getAuthHeaders() }
+        });
         if (!response.ok) throw new Error("Could not fetch equipments");
         return await response.json();
     } catch (error) {
@@ -368,7 +392,10 @@ export const createEquipment = async (equipment: Partial<Equipment>): Promise<Eq
     try {
         const response = await fetch(`${API_BASE}/equipments`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify(equipment)
         });
         if (!response.ok) throw new Error("Could not create equipment");
@@ -386,7 +413,10 @@ export const updateEquipment = async (id: number, equipment: Partial<Equipment>)
     try {
         const response = await fetch(`${API_BASE}/equipments/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify(equipment)
         });
         if (!response.ok) throw new Error("Could not update equipment");
@@ -403,7 +433,8 @@ export const updateEquipment = async (id: number, equipment: Partial<Equipment>)
 export const deleteEquipment = async (id: number): Promise<boolean> => {
     try {
         const response = await fetch(`${API_BASE}/equipments/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: { ...getAuthHeaders() }
         });
         return response.ok;
     } catch (error) {
@@ -417,7 +448,9 @@ export const deleteEquipment = async (id: number): Promise<boolean> => {
  */
 export const getIncidentHistory = async (equipmentId: number): Promise<Incident[]> => {
     try {
-        const response = await fetch(`${API_BASE}/incidents/equipment/${equipmentId}`);
+        const response = await fetch(`${API_BASE}/incidents/equipment/${equipmentId}`, {
+            headers: { ...getAuthHeaders() }
+        });
         if (!response.ok) throw new Error("Could not fetch incidents");
         return await response.json();
     } catch (error) {
@@ -431,7 +464,9 @@ export const getIncidentHistory = async (equipmentId: number): Promise<Incident[
  */
 export const getAllIncidents = async (): Promise<Incident[]> => {
     try {
-        const response = await fetch(`${API_BASE}/incidents`);
+        const response = await fetch(`${API_BASE}/incidents`, {
+            headers: { ...getAuthHeaders() }
+        });
         if (!response.ok) throw new Error("Could not fetch global incidents");
         return await response.json();
     } catch (error) {
@@ -445,7 +480,9 @@ export const getAllIncidents = async (): Promise<Incident[]> => {
  */
 export const getUsers = async (): Promise<UserProfile[]> => {
     try {
-        const response = await fetch(`${API_BASE}/users`);
+        const response = await fetch(`${API_BASE}/users`, {
+            headers: { ...getAuthHeaders() }
+        });
         if (!response.ok) throw new Error("Could not fetch users");
         return await response.json();
     } catch (error) {
@@ -461,7 +498,10 @@ export const createUser = async (user: Partial<UserProfile & { password?: string
     try {
         const response = await fetch(`${API_BASE}/users`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify(user)
         });
         if (!response.ok) throw new Error("Could not create user");
@@ -479,7 +519,10 @@ export const updateUser = async (id: number, user: Partial<UserProfile & { passw
     try {
         const response = await fetch(`${API_BASE}/users/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify(user)
         });
         if (!response.ok) throw new Error("Could not update user");
@@ -496,7 +539,8 @@ export const updateUser = async (id: number, user: Partial<UserProfile & { passw
 export const deleteUser = async (id: number): Promise<boolean> => {
     try {
         const response = await fetch(`${API_BASE}/users/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: { ...getAuthHeaders() }
         });
         return response.ok;
     } catch (error) {
@@ -509,7 +553,9 @@ export const deleteUser = async (id: number): Promise<boolean> => {
  */
 export const getFleetDayDetails = async (dayIndex: number): Promise<FleetDayRisk | null> => {
     try {
-        const response = await fetch(`${API_BASE}/dashboard/fleet-day-details/${dayIndex}`);
+        const response = await fetch(`${API_BASE}/dashboard/fleet-day-details/${dayIndex}`, {
+            headers: { ...getAuthHeaders() }
+        });
         if (!response.ok) throw new Error("Could not fetch fleet day details");
         return await response.json();
     } catch (error) {
@@ -523,7 +569,9 @@ export const getFleetDayDetails = async (dayIndex: number): Promise<FleetDayRisk
  */
 export const getAdvancedStats = async (): Promise<AdvancedStats | null> => {
     try {
-        const response = await fetch(`${API_BASE}/dashboard/advanced-stats`);
+        const response = await fetch(`${API_BASE}/dashboard/advanced-stats`, {
+            headers: { ...getAuthHeaders() }
+        });
         if (!response.ok) throw new Error("Could not fetch advanced stats");
         return await response.json();
     } catch (error) {
@@ -569,7 +617,10 @@ export const updateUserPassword = async (id: number, payload: any): Promise<bool
     try {
         const response = await fetch(`${API_BASE}/users/${id}/password`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify(payload)
         });
         return response.ok;
@@ -586,7 +637,10 @@ export const updateUserAccount = async (id: number, payload: any): Promise<UserP
     try {
         const response = await fetch(`${API_BASE}/users/${id}/account`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify(payload)
         });
         if (!response.ok) throw new Error("Could not update account");
@@ -604,7 +658,10 @@ export const updateUserImage = async (id: number, imageBase64: string): Promise<
     try {
         const response = await fetch(`${API_BASE}/users/${id}/image`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
             body: JSON.stringify({ image: imageBase64 })
         });
         if (!response.ok) throw new Error(`Could not update profile image (Status: ${response.status})`);

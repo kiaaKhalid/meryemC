@@ -21,6 +21,7 @@ interface MenuItem {
   href: string;
   subItems?: { label: string; href: string }[];
   badge?: number;
+  adminOnly?: boolean;
 }
 
 // --- CONFIGURATION DES ÉLÉMENTS DU MENU ---
@@ -29,8 +30,7 @@ const menuItems: MenuItem[] = [
   { icon: ShieldCheck, label: "Maintenance", href: "/admin/maintenance" },
   { icon: Cpu, label: "Équipements", href: "/admin/equipments" },
   { icon: History, label: "Incidents", href: "/admin/incidents" },
-  { icon: Users, label: "Personnel", href: "/admin/users" },
-  { icon: MessageSquare, label: "Inbox", href: "/inbox" },
+  { icon: Users, label: "Personnel", href: "/admin/users", adminOnly: true },
 ];
 
 const bottomItems = [
@@ -48,7 +48,7 @@ export default function Sidebar({ onSettingsClick }: SidebarProps) {
   const [isReportingOpen, setIsReportingOpen] = useState(true);
   const pathname = usePathname(); 
   const { theme, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   
   // ÉTAT POUR LA MODALE DE DÉCONNEXION
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -92,52 +92,54 @@ export default function Sidebar({ onSettingsClick }: SidebarProps) {
 
       {/* NAVIGATION PRINCIPALE */}
       <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar">
-        {menuItems.map((item, i) => {
-          const isActive = pathname === item.href;
-          
-          return (
-            <div key={i}>
-              <Link href={item.href}>
-                <div className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group
-                  ${isActive ? 'bg-bg-hover text-text-main' : 'hover:bg-bg-hover hover:text-text-main'}`}>
-                  <div className="flex items-center gap-4">
-                    <item.icon size={20} className={isActive ? 'text-text-main' : 'group-hover:text-text-main'} />
-                    {isOpen && <span className="text-sm font-semibold tracking-wide">{item.label}</span>}
-                  </div>
-                  
-                  {isOpen && (
-                    <div className="flex items-center gap-2">
-                      {item.subItems && (
-                        <div onClick={(e) => { e.preventDefault(); setIsReportingOpen(!isReportingOpen); }}>
-                          {isReportingOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </div>
-                      )}
-                      {item.badge && item.badge > 0 && (
-                        <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-black shadow-[0_0_10px_rgba(37,99,235,0.5)]">
-                          {item.badge}
-                        </span>
-                      )}
+        {menuItems
+          .filter(item => !item.adminOnly || isAdmin)
+          .map((item, i) => {
+            const isActive = pathname === item.href;
+            
+            return (
+              <div key={i}>
+                <Link href={item.href}>
+                  <div className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group
+                    ${isActive ? 'bg-bg-hover text-text-main' : 'hover:bg-bg-hover hover:text-text-main'}`}>
+                    <div className="flex items-center gap-4">
+                      <item.icon size={20} className={isActive ? 'text-text-main' : 'group-hover:text-text-main'} />
+                      {isOpen && <span className="text-sm font-semibold tracking-wide">{item.label}</span>}
                     </div>
-                  )}
-                </div>
-              </Link>
-
-              {/* SOUS-MENU */}
-              {isOpen && item.subItems && isReportingOpen && (
-                <div className="ml-6 mt-2 space-y-1 border-l border-border-main">
-                  {item.subItems.map((sub, j) => (
-                    <Link key={j} href={sub.href}>
-                      <div className={`pl-6 py-2 text-xs font-medium hover:text-text-main cursor-pointer relative transition-colors ${pathname === sub.href ? 'text-text-main' : ''}`}>
-                        <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-3 h-px ${pathname === sub.href ? 'bg-indigo-500 w-4' : 'bg-border-main'}`} />
-                        {sub.label}
+                    
+                    {isOpen && (
+                      <div className="flex items-center gap-2">
+                        {item.subItems && (
+                          <div onClick={(e) => { e.preventDefault(); setIsReportingOpen(!isReportingOpen); }}>
+                            {isReportingOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                          </div>
+                        )}
+                        {item.badge && item.badge > 0 && (
+                          <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-black shadow-[0_0_10px_rgba(37,99,235,0.5)]">
+                            {item.badge}
+                          </span>
+                        )}
                       </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+                    )}
+                  </div>
+                </Link>
+
+                {/* SOUS-MENU */}
+                {isOpen && item.subItems && isReportingOpen && (
+                  <div className="ml-6 mt-2 space-y-1 border-l border-border-main">
+                    {item.subItems.map((sub, j) => (
+                      <Link key={j} href={sub.href}>
+                        <div className={`pl-6 py-2 text-xs font-medium hover:text-text-main cursor-pointer relative transition-colors ${pathname === sub.href ? 'text-text-main' : ''}`}>
+                          <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-3 h-px ${pathname === sub.href ? 'bg-indigo-500 w-4' : 'bg-border-main'}`} />
+                          {sub.label}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
       </nav>
 
       {/* FOOTER ITEMS */}

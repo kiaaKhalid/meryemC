@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sliders, Bell, AlertCircle, Clock, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 
 interface Props {
   currentRisk: number;
@@ -12,6 +13,7 @@ interface Props {
 
 const ConfigPanel = ({ currentRisk, initialThreshold = 60, lastNotification }: Props) => {
   const [threshold, setThreshold] = useState(initialThreshold);
+  const { isAdmin } = useAuth();
   const isAlertTriggered = currentRisk > threshold;
 
   return (
@@ -61,8 +63,9 @@ const ConfigPanel = ({ currentRisk, initialThreshold = 60, lastNotification }: P
             min="0" 
             max="100" 
             value={threshold} 
-            onChange={(e) => setThreshold(Number.parseInt(e.target.value))}
-            className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all"
+            onChange={(e) => isAdmin && setThreshold(Number.parseInt(e.target.value))}
+            disabled={!isAdmin}
+            className={`w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all ${!isAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}
           />
           {/* Visual Indicator of Current Risk on Slider */}
           <motion.div 

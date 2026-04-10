@@ -20,7 +20,7 @@ public class User {
     private String password;
     
     private String email;
-    private String role; // ADMIN, OPERATOR, ANALYST
+    private String role; // ADMIN, VISITOR
     private String civility;
 
     @Column(columnDefinition="LONGTEXT")
