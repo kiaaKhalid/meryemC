@@ -548,6 +548,7 @@ export const deleteUser = async (id: number): Promise<boolean> => {
         return false;
     }
 };
+
 /**
  * Fetch detailed risk scores for the entire fleet for a specific day index (0-7).
  */
