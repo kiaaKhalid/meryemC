@@ -150,9 +150,18 @@ public class DashboardService {
         
         return DashboardStatsDTO.PressureIndexDTO.builder()
                 .score(Math.min(5, Math.max(1, score)))
-         
-
+                .thermalStress(temps)
+                .windStress(winds)
                 .fragileZones(List.of("Anfa", "Sidi Maârouf", "Bourgogne"))
-                
                 .build();
+    }
+
+    private Double calculateSLARuptureProb(List<MaintenanceAlert> alerts) {
+        if (alerts.isEmpty()) return 0.0;
+        long problematic = alerts.stream()
+                .filter(a -> a.getEstimatedRepairTime() != null && a.getLegalDeadline() != null 
+                             && a.getEstimatedRepairTime() > a.getLegalDeadline())
+                .count();
+        return (double) problematic / alerts.size() * 100.0;
+    }
 }

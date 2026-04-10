@@ -10,8 +10,6 @@ import tensorflow as tf
 
 app = FastAPI(title="Professional Predictive Maintenance API", version="2.5.0")
 
-import traceback
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "modele_maintenance_final.joblib")
 KERAS_MODEL_PATH = os.path.join(BASE_DIR, "models", "expert_casablanca_final.keras")
