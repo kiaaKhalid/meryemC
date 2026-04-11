@@ -63,7 +63,7 @@ export default function UsersPage() {
         <div className="flex min-h-screen bg-bg-main">
             <Sidebar onSettingsClick={() => setIsSettingsOpen(true)} />
 
-            <main className="flex-1 h-screen overflow-y-auto custom-scrollbar">
+            <main className="flex-1 h-screen overflow-y-auto custom-scrollbar overscroll-behavior-none">
                 {loading ? (
                     <div className="flex h-full items-center justify-center">
                         <Orbit className="text-blue-500 animate-spin" size={48} />
@@ -78,10 +78,10 @@ export default function UsersPage() {
                         {isAdmin && (
                             <button 
                                 onClick={() => setManageUser(null)}
-                                className="fixed bottom-10 right-10 z-50 w-20 h-20 rounded-[2.5rem] bg-blue-500 hover:bg-blue-600 shadow-[0_20px_50px_-10px_rgba(59,130,246,0.5)] flex items-center justify-center text-text-main transition-all hover:scale-110 active:scale-95 group"
+                                className="fixed bottom-10 right-10 z-50 w-14 h-14 rounded-2xl bg-blue-500 hover:bg-blue-600 shadow-[0_15px_40px_-10px_rgba(59,130,246,0.5)] flex items-center justify-center text-text-main transition-all hover:scale-110 active:scale-95 group"
                             >
-                                <Plus size={32} className="group-hover:rotate-90 transition-transform duration-500" />
-                                <div className="absolute -top-14 right-0 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap shadow-2xl">
+                                <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" />
+                                <div className="absolute -top-12 right-0 bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 whitespace-nowrap shadow-2xl">
                                     Réserver un Profil
                                 </div>
                             </button>

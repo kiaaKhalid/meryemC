@@ -21,9 +21,12 @@ interface Props {
 }
 
 const EquipmentMap = ({ equipments, onEquipmentClick }: Props) => {
+  // Unique key to force remount on stale state (Prevents "Map container being reused")
+  const mapKey = React.useMemo(() => `map-${Date.now()}`, []);
+
   return (
     <div className="w-full h-full min-h-[400px] border border-white/10 rounded-xl overflow-hidden shadow-2xl relative">
-      <MapCore equipments={equipments} onEquipmentClick={onEquipmentClick} />
+      <MapCore key={mapKey} equipments={equipments} onEquipmentClick={onEquipmentClick} />
     </div>
   );
 };

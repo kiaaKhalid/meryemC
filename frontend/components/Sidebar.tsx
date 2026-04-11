@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  LayoutDashboard, MessageSquare, 
+  LayoutDashboard, 
   Settings, LogOut,
   ChevronDown, ChevronUp, ChevronRight,
   ShieldCheck, Cpu, History, Users,
-  FileText, Headphones, Sun, Moon
+  Sun, Moon
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,8 +34,6 @@ const menuItems: MenuItem[] = [
 ];
 
 const bottomItems = [
-  { icon: FileText, label: "Documentation", href: "/docs" },
-  { icon: Headphones, label: "Support", href: "/support" },
   { icon: Settings, label: "Settings", href: "#" }, 
 ];
 

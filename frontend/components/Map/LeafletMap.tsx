@@ -6,12 +6,19 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useTheme } from '@/components/ThemeProvider';
 
-// Sub-component to handle map-instance dependent logic safely
+// Sub-component to handle map-instance dependent logic and safe cleanup
 const MapControlCenter = () => {
   const map = useMap();
   
   useEffect(() => {
     if (!map) return;
+
+    // Fix for "Map container is being reused" - ensure ID is clean
+    const container = map.getContainer();
+    if (container) {
+      // We don't delete the data, just ensure Next.js HMR doesn't trip
+      (container as any)._leaflet_id = (container as any)._leaflet_id || null;
+    }
 
     const timer = setTimeout(() => {
       try {
@@ -25,6 +32,25 @@ const MapControlCenter = () => {
   }, [map]);
 
   return null;
+};
+
+// Guard to prevent Leaflet from trying to mount on a "dirty" DOM element
+const SafeMapContainer = ({ children, ...props }: any) => {
+  const [isClient, setIsClient] = React.useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+    // Purge any stale leaflet instances from the DOM specifically for Next.js HMR
+    const containers = document.querySelectorAll('.leaflet-container');
+    containers.forEach((container: any) => {
+      if (container._leaflet_id && !document.body.contains(container)) {
+        delete container._leaflet_id;
+      }
+    });
+  }, []);
+
+  if (!isClient) return null;
+  return <MapContainer {...props}>{children}</MapContainer>;
 };
 
 const getRiskColor = (score: number) => {
@@ -56,6 +82,7 @@ interface Props {
 }
 
 const LeafletMap = ({ equipments, onEquipmentClick }: Props) => {
+  const [mapReady, setMapReady] = React.useState(false);
   // Center of Casablanca industrial zone (Port / Aïn Sebaâ)
   const center: [number, number] = [33.59, -7.55];
   const { theme } = useTheme();
@@ -66,17 +93,18 @@ const LeafletMap = ({ equipments, onEquipmentClick }: Props) => {
 
   return (
     <div className="w-full h-full min-h-[400px]">
-      <MapContainer 
-        key="casablanca-industrial-map"
+      <SafeMapContainer 
+        key="casablanca-industrial-map-v2"
         center={center} 
         zoom={12} 
         scrollWheelZoom={false} 
         zoomControl={false}
         className="w-full h-full z-0 h-[400px] bg-bg-main transition-colors duration-300"
+        whenReady={() => setMapReady(true)}
       >
         <MapControlCenter />
-        {/* Safe ZoomControl: Only render if L is properly initialized and we are in client context */}
-        {typeof window !== 'undefined' && L.Control && <ZoomControl position="bottomright" />}
+        {/* Guard ZoomControl: Only render if L is properly initialized and map is ready */}
+        {mapReady && <ZoomControl position="bottomright" />}
         
         {/* Dynamic Industrial Tiles */}
         <TileLayer
@@ -136,7 +164,7 @@ const LeafletMap = ({ equipments, onEquipmentClick }: Props) => {
             );
           })
         }
-      </MapContainer>
+      </SafeMapContainer>
 
       {/* Map Aesthetic Overlay (Legend/Vignette) */}
       <div className="absolute top-4 left-4 z-[999] pointer-events-none">

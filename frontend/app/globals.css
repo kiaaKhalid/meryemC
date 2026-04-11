@@ -66,11 +66,19 @@
 }
 
 @layer base {
+  html, body {
+    overscroll-behavior: none;
+  }
+  
   body {
     background-color: var(--bg-main);
     color: var(--text-main);
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+}
+
+.custom-scrollbar {
+  overscroll-behavior: none;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
