@@ -3,15 +3,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Filter, ArrowRight, Shield, AlertTriangle, Zap, MapPin } from 'lucide-react';
-import { FleetDayRisk } from '@/services/maintenanceService';
+import { FleetDayRisk, DayForecast } from '@/services/maintenanceService';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   data: FleetDayRisk | null;
+  forecast?: DayForecast | null;
 }
 
-const DailyRiskModal = ({ isOpen, onClose, data }: Props) => {
+const DailyRiskModal = ({ isOpen, onClose, data, forecast }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   if (!data) return null;
@@ -68,6 +69,38 @@ const DailyRiskModal = ({ isOpen, onClose, data }: Props) => {
                   <X size={20} />
                 </button>
               </div>
+
+              {/* Weather Data Block (si la prévision est disponible) */}
+              {forecast && (
+                <div className="px-8 py-5 border-b border-border-main bg-bg-card/80 flex flex-wrap items-center justify-between gap-6 transition-colors">
+                  <div className="flex flex-wrap gap-8">
+                     <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-black text-text-dim tracking-widest mb-1">Météo Prévue</span>
+                        <span className="text-xl font-bold text-text-main">{forecast.temp}°C</span>
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-black text-text-dim tracking-widest mb-1">Vent</span>
+                        <span className="text-sm font-bold text-text-main mt-auto mb-1">{forecast.windSpeed} km/h</span>
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-black text-text-dim tracking-widest mb-1">Humidité</span>
+                        <span className="text-sm font-bold text-text-main mt-auto mb-1">{forecast.humidity}%</span>
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-black text-text-dim tracking-widest mb-1">Pression</span>
+                        <span className="text-sm font-bold text-text-main mt-auto mb-1">{forecast.pressure} hPa</span>
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-black text-text-dim tracking-widest mb-1">Index UV</span>
+                        <span className="text-sm font-bold text-text-main mt-auto mb-1">{forecast.uvIndex}</span>
+                     </div>
+                  </div>
+                  <div className="bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-2xl flex flex-col items-center">
+                     <span className="text-[10px] uppercase font-black text-indigo-400 tracking-widest">Score Risque Météo</span>
+                     <span className="text-sm font-black text-indigo-300">{forecast.riskScore}/100</span>
+                  </div>
+                </div>
+              )}
 
               {/* Search Bar */}
               <div className="px-8 py-6 border-b border-border-main bg-bg-main/5 flex gap-4 transition-colors duration-300">

@@ -131,6 +131,12 @@ public class DashboardController {
                     .riskScore(Math.round(avg * 10.0) / 10.0)
                     .temp(w.getTemperature())
                     .humidity(w.getHumidity())
+                    .pressure(w.getPressure())
+                    .uvIndex(w.getUvIndex())
+                    .visibility(w.getVisibility())
+                    .dewPoint(w.getDewPoint())
+                    .windSpeed(w.getWindSpeed())
+                    .wmoCode(Boolean.TRUE.equals(w.getIsLightning()) ? 95 : 0)
                     .build());
         }
 

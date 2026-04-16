@@ -6,13 +6,14 @@ import SettingsModal from '@/components/SettingsModal';
 import MaintenanceHeader from '@/components/maintenance/MaintenanceHeader';
 import ConfigPanel from '@/components/maintenance/ConfigPanel';
 import WeeklyForecast from '@/components/maintenance/WeeklyForecast';
-import { 
-  getMaintenanceData, 
-  getAllEquipments, 
+import {
+  getMaintenanceData,
+  getAllEquipments,
   getFleetDayDetails,
-  MaintenanceStatus, 
+  MaintenanceStatus,
   Equipment,
-  FleetDayRisk
+  FleetDayRisk,
+  DayForecast
 } from '@/services/maintenanceService';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -52,6 +53,7 @@ export default function AdminMaintenancePage() {
   const [data, setData] = useState<MaintenanceStatus>(DEFAULT_STATUS);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
   const [selectedDayData, setSelectedDayData] = useState<FleetDayRisk | null>(null);
+  const [selectedDayForecast, setSelectedDayForecast] = useState<DayForecast | null>(null);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
   const [isLoadingDay, setIsLoadingDay] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -65,6 +67,7 @@ export default function AdminMaintenancePage() {
     const details = await getFleetDayDetails(dayIndex);
     if (details) {
       setSelectedDayData(details);
+      setSelectedDayForecast(data.forecast[dayIndex]);
       setIsDayModalOpen(true);
     }
     setIsLoadingDay(false);
@@ -83,7 +86,7 @@ export default function AdminMaintenancePage() {
           getMaintenanceData(),
           getAllEquipments()
         ]);
-        
+
         setData(maintenanceData);
         setEquipments(equipmentList);
         setIsLoading(false);
@@ -155,13 +158,13 @@ export default function AdminMaintenancePage() {
                     </div>
                     <MoreHorizontal size={16} className="text-text-dim cursor-pointer hover:text-text-main transition-colors" />
                   </div>
-                  
+
                   <div className="flex-1 w-full rounded-2xl overflow-hidden border border-border-main relative bg-bg-main/20 min-h-0">
-                    <EquipmentMap 
-                      equipments={equipments} 
+                    <EquipmentMap
+                      equipments={equipments}
                       onEquipmentClick={handleEquipmentClick}
                     />
-                    
+
                     {/* Map Stats Overlay */}
                     <div className="absolute bottom-4 right-4 z-[1000] p-3 bg-bg-card/90 backdrop-blur-md rounded-xl border border-border-main shadow-2xl space-y-2 transition-colors duration-300">
                       <div className="flex items-center justify-between gap-6">
@@ -187,8 +190,8 @@ export default function AdminMaintenancePage() {
 
             {/* Weekly View Section */}
             <div className="space-y-6">
-              <WeeklyForecast 
-                forecast={data.forecast} 
+              <WeeklyForecast
+                forecast={data.forecast}
                 onDayClick={handleDayClick}
               />
             </div>
@@ -210,19 +213,20 @@ export default function AdminMaintenancePage() {
         id={selectedEquipmentId}
       />
 
-      <DailyRiskModal 
+      <DailyRiskModal
         key="daily-risk-modal"
         isOpen={isDayModalOpen}
         onClose={() => setIsDayModalOpen(false)}
         data={selectedDayData}
+        forecast={selectedDayForecast}
       />
 
       {isLoadingDay && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
-           <div className="bg-[#0F172A] border border-white/10 p-6 rounded-3xl shadow-2xl flex items-center gap-4">
-              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs font-black text-white uppercase tracking-widest">Analyse Predictive en cours...</span>
-           </div>
+          <div className="bg-[#0F172A] border border-white/10 p-6 rounded-3xl shadow-2xl flex items-center gap-4">
+            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <span className="text-xs font-black text-white uppercase tracking-widest">Analyse Predictive en cours...</span>
+          </div>
         </div>
       )}
     </div>
